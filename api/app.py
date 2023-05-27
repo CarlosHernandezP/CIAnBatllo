@@ -29,7 +29,7 @@ def upload_audio():
     # Guarda el archivo en la ruta especificada
     audio_file.save(save_path)
 
-    result = stt(save_path)
+    result = stt(save_path, lang)
 
     tts(text_to_convert = result, lang=lang, save_path=save_path)
     return render_template('result.html', result=result,lang=lang)
