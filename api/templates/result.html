@@ -23,6 +23,10 @@
         <div class="card-body">
             <h1 class="card-title">Resultado</h1>
             <p class="card-text form-lang">{{ lang }}</p>
+            <audio controls>
+                <source src="{{ audio_path }}" type="audio/mp3">
+                Tu navegador no soporta la reproducción de audio.
+            </audio>
             <p class="card-text lead">{{ result }}</p>
             <div class="form-submit">
                 <a href="/" class="btn btn-primary">Regresar</a>
