@@ -15,6 +15,11 @@ def hello():
 @app.route('/upload-audio', methods=['POST'])
 def upload_audio():
     audio_file = request.files['audio']
+
+    ## This is the variable that you need to suplant with lang
+    ## TODO
+    lang = 'it'
+
     # Obtén el nombre original del archivo
     filename = audio_file.filename
     # Obtén la ruta absoluta de la carpeta "files"
@@ -29,8 +34,5 @@ def upload_audio():
     audio_file.save(save_path)
     result = stt(save_path)
     
-    tts(text_to_convert = result, save_path=save_path)
-
-
-
+    tts(text_to_convert = result, lang=lang, save_path=save_path)
     return result #'Archivo de audio recibido correctamente'
