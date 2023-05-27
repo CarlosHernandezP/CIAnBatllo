@@ -16,7 +16,6 @@ def upload_audio():
     folder_path = os.path.join(os.path.dirname(__file__), 'files')
     # Combina la ruta de la carpeta "files" con el nombre de archivo
     save_path = os.path.join(folder_path, filename)
-    import pdb;pdb.set_trace()
     # Guarda el archivo en la ruta especificada
     audio_file.save(save_path)
 
