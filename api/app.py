@@ -11,11 +11,7 @@ folder_path = os.path.join(os.path.dirname(__file__), 'files')
 
 @app.route('/')
 def hello():
-    languages = ["Español", "Inglés", "Francés", "Alemán"]
-    select_options = ""
-    for lang in languages:
-        select_options += f'<option value="{lang.lower()}">{lang}</option>'
-    return render_template('index.html', select_options=select_options)
+    return render_template('index.html')
 
 @app.route('/upload-audio', methods=['POST'])
 def upload_audio():
