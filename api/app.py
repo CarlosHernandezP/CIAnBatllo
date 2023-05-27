@@ -29,5 +29,7 @@ def upload_audio():
     audio_file.save(save_path)
     result = stt(save_path)
 
+    tts(text_to_convert = result, save_path=save_path)
+
 
     return result #'Archivo de audio recibido correctamente'
