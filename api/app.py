@@ -17,7 +17,11 @@ def upload_audio():
     # Obtén el nombre original del archivo
     filename = audio_file.filename
     # Obtén la ruta absoluta de la carpeta "files"
+    
     folder_path = os.path.join(os.path.dirname(__file__), 'files')
+    # make sure that the folder exists
+    os.makedirs(folder_path, exist_ok=True)
+
     # Combina la ruta de la carpeta "files" con el nombre de archivo
     save_path = os.path.join(folder_path, filename)
     # Guarda el archivo en la ruta especificada
