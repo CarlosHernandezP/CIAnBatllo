@@ -2,7 +2,8 @@ from flask import Flask, request
 # import transcribe as transcribe from a directory that is ../modeltest
 import sys
 sys.path.append('../')
-import modeltest.transcribe as transcribe
+
+from modeltest.file_processing import stt, tts
 import os
 
 app = Flask(__name__)
@@ -26,7 +27,10 @@ def upload_audio():
     save_path = os.path.join(folder_path, filename)
     # Guarda el archivo en la ruta especificada
     audio_file.save(save_path)
-    result = transcribe.transcribe(save_path)
+    result = stt(save_path)
+    
+    tts(text_to_convert = result, save_path=save_path)
+
 
 
     return result #'Archivo de audio recibido correctamente'
