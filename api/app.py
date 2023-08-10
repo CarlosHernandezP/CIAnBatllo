@@ -86,11 +86,11 @@ def stop():
 def text_to_image():
     # tHE ATTRIBUs will be prompt steps weight and seed
     prompt = request.form['prompt']
-    steps = request.form['steps']
-    weight = request.form['weight']
-    seed = request.form['seed']
+    steps = int(request.form['steps'])
+    weight = int(request.form['weight'])
+    seed = int(request.form['seed'])
 
-    generate_image(prompt, steps, weight, seed)
+    return generate_image(prompt, steps, weight, seed)
 
 
 @app.route('/public/<path:filename>')
