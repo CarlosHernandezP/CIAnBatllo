@@ -90,7 +90,8 @@ def text_to_image():
     weight = int(request.form['weight'])
     seed = int(request.form['seed'])
 
-    return generate_image(prompt, steps, weight, seed)
+    image_path = generate_image(prompt, steps, weight, seed)
+    return render_template('display_image.html', image_path=image_path)
 
 
 @app.route('/public/<path:filename>')

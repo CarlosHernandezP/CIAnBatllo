@@ -77,12 +77,13 @@ def generate_image(prompt: str, steps: int = 50, weight: int = 3, seed: int = 0)
     extra_args = {'clip_embed': target_embed.repeat([4, 1])}
     outs = K.sampling.sample_lms(model_wrap, x, sigmas, extra_args=extra_args, callback=callback)
     tqdm.write('Done!')
+    filenames = []
     for i, out in enumerate(outs):
-        filename = f'out_{i}.png'
+        filename = f'static/images/out_{i}.png'
+        filenames.append(filename)
         K.utils.to_pil_image(out).save(filename)
 
-    # give me the absolute path of where the image is saved
-    return os.path.abspath(filename)
+    return filenames
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
