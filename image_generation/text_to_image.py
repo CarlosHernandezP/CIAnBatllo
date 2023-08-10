@@ -58,12 +58,14 @@ def generate_image(prompt: str, steps: int = 50, weight: int = 3, seed: int = 0)
 
     inner_model = get_model('cc12m_1_cfg')()
     _, side_y, side_x = inner_model.shape
-    inner_model.load_state_dict(torch.load('v_diffusion_pytorch/checkpoints/cc12m_1_cfg.pth', map_location='cpu'))
+    #print working directory
+    print("Current working directory: {0}".format(os.getcwd()))
+
+    inner_model.load_state_dict(torch.load('../image_generation/v_diffusion_pytorch/checkpoints/cc12m_1_cfg.pth', map_location='cpu'))
     inner_model = inner_model.half().cuda().eval().requires_grad_(False)
     model = K.external.VDenoiser(inner_model)
     clip_model = clip.load(inner_model.clip_model, jit=False, device='cpu')[0]
 
-    prompt = args.prompt
     target_embed = clip_model.encode_text(clip.tokenize(prompt)).float().cuda()
 
     gc.collect()
@@ -78,6 +80,9 @@ def generate_image(prompt: str, steps: int = 50, weight: int = 3, seed: int = 0)
     for i, out in enumerate(outs):
         filename = f'out_{i}.png'
         K.utils.to_pil_image(out).save(filename)
+
+    # give me the absolute path of where the image is saved
+    return os.path.abspath(filename)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
