@@ -1,0 +1,9 @@
+argparse
+clip
+k_diffusion
+sounddevice
+torch
+wavfile
+whisper
+mtranslate
+gtts
