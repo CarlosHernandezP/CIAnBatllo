@@ -4,9 +4,10 @@ k_diffusion
 sounddevice
 torch
 wavfile
-whisper
 mtranslate
 gtts
 openai-whisper
 ffmpeg
 mediapipe
+pygame
+opencv-python
