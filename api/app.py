@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, send_from_directory
+from flask import Flask, request, render_template, send_from_directory,Response
 import sys
 import sounddevice as sd
 import wavfile
@@ -7,6 +7,7 @@ sys.path.append('../')
 from modeltest.file_processing import stt, tts
 from image_generation.text_to_image import generate_image
 import os
+from camera.camera_record import generate_frames   # Importa la nueva función
 
 app = Flask(__name__)
 
@@ -97,6 +98,10 @@ def text_to_image():
 @app.route('/public/<path:filename>')
 def serve_file(filename):
     return send_from_directory(folder_path, filename)
+
+@app.route('/video_feed')
+def video_feed():
+    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 if __name__ == '__main__':
