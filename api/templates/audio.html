@@ -1,0 +1,41 @@
+{% from "macros/template.html" import head,light_control,header,footer,endhead %}
+{{ head() }}
+{{ light_control() }}
+{{ header() }}
+<!-- Begin page content -->
+<main class="flex-shrink-0">
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                Inserte fichero de audio
+            </div>
+            <div class="card-body">
+                <form id="form" action="/upload-audio" method="post" enctype="multipart/form-data" onsubmit="showLoader('form')">
+                    <div class="form-input mb-3">
+                        <label for="audio">Seleccionar archivo de audio</label>
+                        <input type="file" id="audio" name="audio" accept="audio/*" required>
+                    </div>
+                    <div class="form-input mb-3">
+                        <label for="lang">Seleccionar lenguaje</label>
+                        <select id="lang" name="lang">
+                            <option value="es">Español</option>
+                            <option value="en">Inglés</option>
+                            <option value="fr">Francés</option>
+                            <option value="de">Alemán</option>
+                        </select>
+                    </div>
+                    <div class="form-submit text-center">
+                        <button type="submit" class="btn btn-primary">Enviar</button>
+                    </div>
+                </form>
+                <div id="loader" class="loader d-none justify-content-center align-items-center text-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{{ footer() }}
+{{ endhead() }}

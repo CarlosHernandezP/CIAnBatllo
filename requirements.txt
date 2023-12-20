@@ -7,7 +7,8 @@ wavfile
 mtranslate
 gtts
 openai-whisper
-ffmpeg
+ffmpeg-python
 mediapipe
 pygame
 opencv-python
+flask-socketio

@@ -1,0 +1,40 @@
+{% from "macros/template.html" import head,light_control,header,footer,endhead %}
+{{ head() }}
+{{ light_control() }}
+{{ header() }}
+<!-- Begin page content -->
+<main class="flex-shrink-0">
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            Resultado
+        </div>
+        <div class="card-body">
+            <div class="container">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <img src="../{{ image_path[0] }}" alt="Image 1" class="img-fluid">
+                    </div>
+                    <div class="col-md-6">
+                        <img src="../{{ image_path[1] }}" alt="Image 2" class="img-fluid">
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <img src="../{{ image_path[2] }}" alt="Image 3" class="img-fluid">
+                    </div>
+                    <div class="col-md-6">
+                        <img src="../{{ image_path[3] }}" alt="Image 4" class="img-fluid">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center my-2">
+            <a href="{{ url_for('main_routes.image_route') }}" class="btn btn-primary">Regresar</a>
+        </div>
+    </div>
+</div>
+</main>
+{{ footer() }}
+{{ endhead() }}

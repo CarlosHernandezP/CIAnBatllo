@@ -1,137 +1,30 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Subir archivo de audio</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
-    <style>
-        .card {
-            max-width: 600px;
-            margin: auto;
-            margin-top: 10vh;
-        }
-
-        .form-hidden {
-            display: none;
-        }
-    </style>
-    <script>
-        function showLoader() {
-            var loader = document.getElementById("loader");
-            var form = document.getElementById("form");
-            loader.classList.remove("d-none");
-            form.classList.add("form-hidden");
-        }
-
-        function hideLoader() {
-            var loader = document.getElementById("loader");
-            var form = document.getElementById("form");
-            loader.classList.add("d-none");
-            form.classList.remove("form-hidden");
-        }
-    </script>
-</head>
-<body>
-<div class="container">
-    <div class="card">
-        <div class="card-header">
-            Video captura
+{% from "macros/template.html" import head,light_control,header,footer,endhead %}
+{{ head() }}
+    {{ light_control() }}
+    {{ header() }}
+    <!-- Begin page content -->
+    <main class="flex-shrink-0">
+        <div class="container">
+            <h1 class="mt-5">Bienvenidos a la API de proyectos AI</h1>
+            <p class="lead">Aqui publicamos los proyectos relacionados con modelos de inteligencia artificial.</p>
+            <p class="lead">Estas son algunas de las tecnologias utilizadas en los proyectos, se ha utilizado Flask como Framework de Python para consumir los modelos.</p>
+            <ul>
+                <li><strong>argparse:</strong> Biblioteca de Python para procesar argumentos de la línea de comandos.</li>
+                <li><strong>clip:</strong> Parte de la biblioteca CLIP de OpenAI, que permite el procesamiento de texto e imágenes.</li>
+                <li><strong>k_diffusion:</strong> Biblioteca para la generación de imágenes a partir de texto usando el modelo V-Diffusion.</li>
+                <li><strong>sounddevice:</strong> Interfaz para acceder a dispositivos de sonido en Python.</li>
+                <li><strong>torch:</strong> Biblioteca para aprendizaje profundo y cómputo tensorial.</li>
+                <li><strong>wavfile:</strong> Módulo para leer y escribir archivos de audio WAV en Python.</li>
+                <li><strong>mtranslate:</strong> Biblioteca para traducción automática de texto.</li>
+                <li><strong>gtts:</strong> Biblioteca para convertir texto en habla (Text-to-Speech) usando Google Text-to-Speech API.</li>
+                <li><strong>openai-whisper:</strong> Modelo de síntesis de habla de OpenAI.</li>
+                <li><strong>ffmpeg-python:</strong> Enlace Python para la biblioteca FFmpeg, utilizado para procesar y manipular archivos multimedia.</li>
+                <li><strong>mediapipe:</strong> Biblioteca para análisis de datos de medios, incluyendo el seguimiento de manos y rostros.</li>
+                <li><strong>pygame:</strong> Biblioteca para el desarrollo de juegos y aplicaciones multimedia en Python.</li>
+                <li><strong>opencv-python:</strong> Biblioteca para visión por computadora y procesamiento de imágenes.</li>
+            </ul>
         </div>
-        <div class="card-body">
-            <p>Levantar mano derecha = Video color rojo</p>
-            <p>Levantar mano izquierda = Video color azul</p>
-            <p>dos manos arriba = Video color lila</p>
-            <div style="max-width: 100%; overflow: hidden;">
-                <img src="{{ url_for('video_feed') }}" alt="Video Stream" style="width: 100%;">
-            </div>
-        </div>
-    </div>
+    </main>
+    {{ footer() }}
+{{ endhead() }}
 
-    <div class="card">
-        <div class="card-header">
-            Inserte fichero de audio
-        </div>
-        <div class="card-body">
-            <form id="form" action="/upload-audio" method="post" enctype="multipart/form-data" onsubmit="showLoader()">
-                <div class="form-input mb-3">
-                    <label for="audio">Seleccionar archivo de audio</label>
-                    <input type="file" id="audio" name="audio" accept="audio/*" required>
-                </div>
-                <div class="form-input mb-3">
-                    <label for="lang">Seleccionar lenguaje</label>
-                    <select id="lang" name="lang">
-                        <option value="es">Español</option>
-                        <option value="en">Inglés</option>
-                        <option value="fr">Francés</option>
-                        <option value="de">Alemán</option>
-                    </select>
-                </div>
-                <div class="form-submit text-center">
-                    <button type="submit" class="btn btn-primary">Enviar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    <div class="card">
-        <div class="card-header">
-            Genera tu Personaje
-        </div>
-        <div class="card-body">
-            <form id="form-2" action="/text-to-image" method="post" enctype="multipart/form-data" onsubmit="showLoader()">
-                <div class="form-input mb-3">
-                    <label for="inputText">Ingresa texto (máximo 255 caracteres):</label><br>
-                    <textarea id="inputText" name="prompt" rows="4" cols="50" maxlength="255" oninput="updateCharacterCount()" required></textarea><br>
-                    <span id="characterCount">255</span> caracteres restantes
-                </div>
-                <div class="form-input mb-3">
-                    <label for="weight">Exactitud</label>
-                    <input type="number" id="weight" name="weight" size="4" required>
-                </div>
-                <div class="form-input mb-3">
-                    <label for="steps">Pasos</label>
-                    <input type="number" id="steps" name="steps" size="4" required>
-                </div>
-                <div class="form-input mb-3">
-                    <label for="seed">Seed</label>
-                    <input type="number" id="seed" name="seed" size="4" required>
-                </div>
-                <div class="form-submit text-center">
-                    <button type="button" class="btn btn-warning" onclick="resetForm()">Limpiar</button>
-                    <button type="submit" class="btn btn-primary">Generar</button>
-                </div>
-            </form>
-          <div id="image_box" style="display:none"> </div>
-        </div>
-    </div>
-
-
-    <div id="loader" class="loader d-none justify-content-center align-items-center text-center">
-        <div class="spinner-border" role="status">
-            <span class="visually-hidden">Cargando...</span>
-        </div>
-    </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
-<script>
-    function updateCharacterCount() {
-        const maxLength = 255;
-        const inputText = document.getElementById('inputText');
-        const characterCount = document.getElementById('characterCount');
-        const remainingChars = maxLength - inputText.value.length;
-
-        characterCount.textContent = remainingChars;
-    }
-    function resetForm() {
-        const form1 = document.getElementById('form'); // Primer formulario
-        const form2 = document.getElementById('form-2'); // Segundo formulario
-        form1.reset();
-        form2.reset();
-        updateCharacterCount(); // Actualizar el contador después de limpiar el formulario
-    }
-
-    // Llamado inicial para actualizar el contador al cargar la página
-    updateCharacterCount();
-</script>
-</body>
-</html>

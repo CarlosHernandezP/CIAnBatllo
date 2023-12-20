@@ -1,0 +1,47 @@
+{% from "macros/template.html" import head,light_control,header,footer,endhead %}
+{{ head() }}
+    {{ light_control() }}
+    {{ header() }}
+    <!-- Begin page content -->
+    <main class="flex-shrink-0">
+        <div class="container">
+            <div class="card">
+                <div class="card-header">
+                    Genera tu Personaje
+                </div>
+                <div class="card-body">
+                    <form id="form-2" action="/text-to-image" method="post" enctype="multipart/form-data" onsubmit="showLoader('form-2')">
+                        <div class="form-input mb-3">
+                            <label for="inputText">Ingresa texto (máximo 255 caracteres):</label><br>
+                            <textarea id="inputText" name="prompt" rows="4" cols="50" maxlength="255" oninput="updateCharacterCount()" required></textarea><br>
+                            <span id="characterCount">255</span> caracteres restantes
+                        </div>
+                        <div class="form-input mb-3">
+                            <label for="weight">Exactitud</label>
+                            <input type="number" id="weight" name="weight" size="4" required>
+                        </div>
+                        <div class="form-input mb-3">
+                            <label for="steps">Pasos</label>
+                            <input type="number" id="steps" name="steps" size="4" required>
+                        </div>
+                        <div class="form-input mb-3">
+                            <label for="seed">Seed</label>
+                            <input type="number" id="seed" name="seed" size="4" required>
+                        </div>
+                        <div class="form-submit text-center">
+                            <button type="button" class="btn btn-warning" onclick="resetForm()">Limpiar</button>
+                            <button type="submit" class="btn btn-primary">Generar</button>
+                        </div>
+                    </form>
+                    <div id="image_box" style="display:none"> </div>
+                    <div id="loader" class="loader d-none justify-content-center align-items-center text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    {{ footer() }}
+{{ endhead() }}

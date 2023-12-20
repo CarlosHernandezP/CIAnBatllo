@@ -23,6 +23,9 @@ It leverages a conditional denoiser along with CLIP for text-to-image translatio
 current_path: str = os.path.dirname(os.path.abspath(__file__))
 module_path: str = os.path.join(current_path, 'v-diffusion-pytorch')
 sys.path.append(module_path)
+# Crear el directorio si no existe
+output_dir = 'static/images/'
+os.makedirs(output_dir, exist_ok=True)
 from diffusion import get_model  # noqa: E402
 
 
@@ -71,8 +74,8 @@ def callback(info: dict):
         nrow = math.ceil(info['denoised'].shape[0] ** 0.5)
         grid = utils.make_grid(info['denoised'], nrow, padding=0)
         tqdm.write(f'Step {info["i"]} of 50, sigma {info["sigma"]:g}:')
-        K.utils.to_pil_image(grid).save(f"progress_step_{info['i']}.png")
-
+        filename = os.path.join(output_dir, f'progress_step_{info["i"]}.png')
+        K.utils.to_pil_image(grid).save(filename)
 
 
 def generate_image(prompt: str, steps: int = 50, weight: float = 3.0, seed: int = 0) -> List[str]:
@@ -115,8 +118,9 @@ def generate_image(prompt: str, steps: int = 50, weight: float = 3.0, seed: int 
     outs = K.sampling.sample_lms(model_wrap, x, sigmas, extra_args=extra_args, callback=callback)
     tqdm.write('Done!')
     filenames = []
+
     for i, out in enumerate(outs):
-        filename = f'static/images/out_{i}.png'
+        filename = os.path.join(output_dir, f'out_{i}.png')
         filenames.append(filename)
         K.utils.to_pil_image(out).save(filename)
 
