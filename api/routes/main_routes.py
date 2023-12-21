@@ -1,6 +1,6 @@
 # main_routes.py
 from flask import render_template, Response, request
-from controllers.main_controller import index, upload_audio, text_to_image, video_feed, move_to_folder,video, audio, image
+from controllers.main_controller import index, upload_audio, text_to_image, move_to_folder, audio, image
 from flask import Blueprint
 
 main_routes = Blueprint('main_routes', __name__)
@@ -26,14 +26,6 @@ def text_to_image_route():
 @main_routes.route('/public/<path:filename>')
 def serve_file(filename):
     return move_to_folder(filename)
-
-@main_routes.route('/video')
-def video_route():
-    return video()
-
-@main_routes.route('/video_feed')
-def video_feed_route():
-    return video_feed()
 
 @main_routes.route('/audio')
 def audio_route():

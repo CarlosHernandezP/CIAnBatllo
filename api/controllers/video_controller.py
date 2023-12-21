@@ -1,5 +1,13 @@
+from flask import render_template, Response, request
+
 import cv2
 import mediapipe as mp
+
+def video():
+    return render_template('video.html')
+
+def video_feed():
+    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 def generate_frames():
     mp_pose = mp.solutions.pose

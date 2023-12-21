@@ -1,6 +1,5 @@
 # main_controller.py
 from flask import render_template, Response, send_from_directory
-from camera.camera_record import generate_frames
 import sys
 import os
 sys.path.append('../')
@@ -38,15 +37,11 @@ def text_to_image(prompt, steps, weight, seed):
     image_path = generate_image(prompt, steps, weight, seed)
     return render_template('image_view.html', image_path=image_path)
 
-def video_feed():
-    from camera.camera_record import generate_frames  # Importa localmente aquí
-    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 def move_to_folder(filename):
     return send_from_directory(folder_path, filename)
 
-def video():
-    return render_template('video.html')
+
 
 def audio():
     return render_template('audio.html')
