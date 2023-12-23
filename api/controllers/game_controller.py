@@ -1,8 +1,15 @@
 # game_controller.py
 from flask import render_template,Response
+from flask_socketio import SocketIO, emit
 import cv2
 import mediapipe as mp
 
+# Crear una instancia de SocketIO fuera de la función para que esté disponible en todo el módulo
+socketio = SocketIO()
+
+def init_socketio(app):
+    # Inicializar SocketIO con la aplicación Flask
+    socketio.init_app(app)
 
 def game():
     # Renderiza la plantilla 'index.html'
@@ -43,23 +50,20 @@ def generate_frames():
 
         # Dibujar landmarks de la pose si están disponibles
         if results.pose_landmarks:
-            mp_drawing.draw_landmarks(
-                image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+                mp_drawing.draw_landmarks(
+                    image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
 
-            # Obtener coordenadas de muñecas y hombros
-            right_wrist = results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_WRIST]
-            left_wrist = results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_WRIST]
-            right_shoulder = results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_SHOULDER]
-            left_shoulder = results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_SHOULDER]
+                # Obtener coordenadas de muñecas y hombros
+                right_wrist = results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_WRIST]
+                left_wrist = results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_WRIST]
+                right_shoulder = results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_SHOULDER]
+                left_shoulder = results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_SHOULDER]
 
-            # Aplicar efectos de color basados en posición de muñecas respecto a hombros
-            if right_wrist.y < right_shoulder.y:
-                image[:, :, 0] = image[:, :, 0] * 0.5
-                image[:, :, 1] = image[:, :, 1] * 0.5
+                # Enviar evento personalizado cuando la mano izquierda está levantada
+                if left_wrist.y < left_shoulder.y:
+                    print("Left hand raised - Sending custom event")
+                    socketio.emit('hand_raised_event', {'left_hand_raised': True})
 
-            if left_wrist.y < left_shoulder.y:
-                image[:, :, 1] = image[:, :, 1] * 0.5
-                image[:, :, 2] = image[:, :, 2] * 0.5
 
         # Voltear la imagen horizontalmente
         image = cv2.flip(image, 1)

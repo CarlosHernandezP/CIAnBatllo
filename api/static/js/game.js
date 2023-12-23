@@ -7,6 +7,9 @@
     const canvasWidth = card.clientWidth - 20; // Ancho de la card menos 20 píxeles de margen
     const canvasHeight = 400;  // Establece la altura según tus necesidades
 
+    // Conexion con python y el controlador de game
+    const socket = io.connect('http://' + document.domain + ':' + location.port);
+
     // Establecer el tamaño del canvas
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
@@ -21,6 +24,7 @@
     let jumpHeight = 100;
     let jumpVelocity = 10;
     let gravity = 2;
+
 
     function drawRect() {
     ctx.fillStyle = rectColor;
@@ -46,6 +50,12 @@
 }
 }
 
+    function jumpSpecial() {
+        // Lógica específica del salto especial
+        console.log('Special jump action!');
+        jump();
+    }
+
     window.addEventListener('keydown', (event) => {
     if (event.code === 'Space') {
     jump();
@@ -65,3 +75,24 @@
 
     // Llama a gameLoop una vez para inicializar
     gameLoop();
+
+
+
+    // Agrega mensajes de depuración
+    socket.on('connect', function() {
+        console.log('Socket connected successfully');
+    });
+
+    socket.on('disconnect', function() {
+        console.log('Socket disconnected');
+    });
+
+    socket.on('hand_raised_event', function(data) {
+        // Reemplaza la lógica de salto si la mano izquierda está levantada
+        if (data.left_hand_raised) {
+            console.log('Left hand raised - Special action');
+            // Llama a la función jumpSpecial para realizar la acción especial de salto
+            jumpSpecial();
+        }
+    });
+
