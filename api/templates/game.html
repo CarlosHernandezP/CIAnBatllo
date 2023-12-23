@@ -19,6 +19,19 @@
                 </div>
             </div>
         </div>
+        <div class="card">
+            <div class="card-header">
+                Video captura
+            </div>
+            <div class="card-body">
+                <p>Levantar mano derecha = Video color rojo</p>
+                <p>Levantar mano izquierda = Video color azul</p>
+                <p>dos manos arriba = Video color lila</p>
+                <div style="max-width: 640px; overflow: hidden;">
+                    <img src="{{ url_for('game_routes.video_screen_game') }}" alt="Video Stream" style="width: 640px;">
+                </div>
+            </div>
+        </div>
     </div>
 </main>
 {{ footer() }}
