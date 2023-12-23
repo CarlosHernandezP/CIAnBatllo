@@ -12,3 +12,4 @@ mediapipe
 pygame
 opencv-python
 flask-socketio
+v-diffusion-models
