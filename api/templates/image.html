@@ -44,4 +44,25 @@
         </div>
     </main>
     {{ footer() }}
+
+<script>
+    function updateCharacterCount() {
+        const maxLength = 255;
+        const inputText = document.getElementById('inputText');
+        const characterCount = document.getElementById('characterCount');
+        const remainingChars = maxLength - inputText.value.length;
+
+        characterCount.textContent = remainingChars;
+    }
+    function resetForm() {
+        const form1 = document.getElementById('form'); // Primer formulario
+        const form2 = document.getElementById('form-2'); // Segundo formulario
+        form1.reset();
+        form2.reset();
+        updateCharacterCount(); // Actualizar el contador después de limpiar el formulario
+    }
+
+    // Llamado inicial para actualizar el contador al cargar la página
+    updateCharacterCount();
+</script>
 {{ endhead() }}

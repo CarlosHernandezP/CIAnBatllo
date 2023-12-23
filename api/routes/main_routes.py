@@ -11,3 +11,4 @@ main_routes = Blueprint('main_routes', __name__)
 def index_route():
     # Llama a la función index del controlador principal
     return index()
+

@@ -1,0 +1,26 @@
+{% from "macros/template.html" import head,light_control,header,footer,script,endhead %}
+{{ head() }}
+{{ light_control() }}
+{{ header() }}
+<!-- Begin page content -->
+<main class="flex-shrink-0">
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                Game
+            </div>
+            <div class="card-body p-2">
+                <p>Utiliza la barra espaciadora para hacer saltos</p>
+                <canvas id="gameCanvas" width="800" height="600"></canvas>
+                <div id="loader" class="loader d-none justify-content-center align-items-center text-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{{ footer() }}
+<script src="../static/js/game.js"></script>
+{{ endhead() }}

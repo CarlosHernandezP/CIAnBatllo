@@ -35,29 +35,29 @@ def move_to_folder(filename):
 
 class CFGDenoiser(nn.Module):
     """
-    A class for the Conditional denoiser.
+    Clase para el eliminador de ruido condicional.
 
-    Attributes:
-        inner_model (nn.Module): The model based on which denoising will be performed.
-        cond_scale (float): The scale for the conditional model.
+    Atributos:
+        inner_model (nn.Module): El modelo en el cual se realizará la eliminación de ruido.
+        cond_scale (float): La escala para el modelo condicional.
     """
     def __init__(self, model: nn.Module, cond_scale: float):
-        """Initialize the conditional denoiser."""
+        """Inicializa el eliminador de ruido condicional."""
         super().__init__()
         self.inner_model = model
         self.cond_scale = cond_scale
 
     def forward(self, x: torch.Tensor, sigma: torch.Tensor, clip_embed: torch.Tensor) -> torch.Tensor:
         """
-        Perform the denoising operation based on the inner model.
+        Realiza la operación de eliminación de ruido basada en el modelo interno.
 
-        Parameters:
-            x (torch.Tensor): The input tensor.
-            sigma (torch.Tensor): The noise level for the model.
-            clip_embed (torch.Tensor): The CLIP embeddings for the input.
+        Parámetros:
+            x (torch.Tensor): El tensor de entrada.
+            sigma (torch.Tensor): El nivel de ruido para el modelo.
+            clip_embed (torch.Tensor): Los embeddings de CLIP para la entrada.
 
-        Returns:
-            torch.Tensor: The denoised output tensor.
+        Retorna:
+            torch.Tensor: El tensor de salida sin ruido.
         """
         x_in = torch.cat([x] * 2)
         sigma_in = torch.cat([sigma] * 2)
@@ -67,10 +67,10 @@ class CFGDenoiser(nn.Module):
 
 def callback(info: dict):
     """
-    Callback function to show progress during sampling.
+    Función de devolución de llamada para mostrar el progreso durante el muestreo.
 
-    Parameters:
-        info (dict): A dictionary containing metadata about the sampling process.
+    Parámetros:
+        info (dict): Un diccionario que contiene metadatos sobre el proceso de muestreo.
     """
     if info['i'] % 10 == 0:
         nrow = math.ceil(info['denoised'].shape[0] ** 0.5)
@@ -81,16 +81,16 @@ def callback(info: dict):
 
 def generate_image(prompt: str, steps: int = 50, weight: float = 3.0, seed: int = 0) -> List[str]:
     """
-    Generate images based on a given text prompt.
+    Genera imágenes basadas en un texto dado como indicación.
 
-    Parameters:
-        prompt (str): The text prompt based on which images will be generated.
-        steps (int): The number of steps for the sampling process.
-        weight (float): The weight for the conditioning.
-        seed (int): The random seed for initialization.
+    Parámetros:
+        prompt (str): El texto de indicación en base al cual se generarán las imágenes.
+        pasos (int): El número de pasos para el proceso de muestreo.
+        peso (float): El peso para la condición.
+        semilla (int): La semilla aleatoria para la inicialización.
 
-    Returns:
-        List[str]: The list of filenames where the generated images are saved.
+    Retorna:
+        List[str]: La lista de nombres de archivo donde se guardan las imágenes generadas.
     """
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
