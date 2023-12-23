@@ -32,7 +32,7 @@ def generate_frames():
     mp_drawing = mp.solutions.drawing_utils
 
     # Inicialización de la cámara
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
 
     while cap.isOpened():
         # Captura del frame de la cámara

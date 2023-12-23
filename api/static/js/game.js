@@ -71,6 +71,10 @@ window.addEventListener('keydown', (event) => {
     if (event.code === 'Space') {
         // Realizar el salto en el rectángulo correspondiente según la posición de la mano
         jump(rectRed); // Por defecto, salto del rectángulo rojo
+        // Programar un salto automático del rectángulo verde un segundo después
+        setTimeout(() => {
+            jump(rectGreen);
+        }, 1000);
     }
 });
 
