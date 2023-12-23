@@ -32,7 +32,7 @@ def generate_frames():
     mp_drawing = mp.solutions.drawing_utils
 
     # Inicialización de la cámara
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)
 
     while cap.isOpened():
         # Captura del frame de la cámara
@@ -63,7 +63,9 @@ def generate_frames():
                 if left_wrist.y < left_shoulder.y:
                     print("Left hand raised - Sending custom event")
                     socketio.emit('hand_raised_event', {'left_hand_raised': True})
-
+                if right_wrist.y < right_shoulder.y:
+                    print("Right hand raised - Sending custom event")
+                    socketio.emit('hand_raised_event', {'right_hand_raised': True})
 
         # Voltear la imagen horizontalmente
         image = cv2.flip(image, 1)
