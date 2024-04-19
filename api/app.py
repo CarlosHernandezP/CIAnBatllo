@@ -5,6 +5,7 @@ from routes.video_routes import video_routes
 from routes.audio_routes import audio_routes
 from routes.image_routes import image_routes
 from routes.game_routes import game_routes
+from routes.trick_routes import trick_routes
 from controllers.game_controller import init_socketio  # Asegúrate de que la importación sea correcta
 
 # Crear una instancia de la aplicación Flask
@@ -20,6 +21,7 @@ app.register_blueprint(video_routes)
 app.register_blueprint(audio_routes)
 app.register_blueprint(image_routes)
 app.register_blueprint(game_routes)
+app.register_blueprint(trick_routes)
 
 if __name__ == '__main__':
     """
