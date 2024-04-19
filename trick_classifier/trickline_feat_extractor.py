@@ -62,7 +62,7 @@ def coorVideoConVideoChatGpt(video_path):
         nombre_video (_type_): Video en formato .mp4
 
     Returns:
-        (np.array, int, int, int): Tensor de dimension (len_fotogramas_video, 33, 3) y los fps del video, ancho y alto
+        (np.array, int, int, int, list[int]): Tensor de dimension (len_fotogramas_video, 33, 3) y los fps del video, ancho y alto, una lista con los frames colapsados
     """
     print("-"*100)
     print("-"*100)
@@ -83,7 +83,10 @@ def coorVideoConVideoChatGpt(video_path):
     alto = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
     tensor = []
+    drop_frames = []
+
     # Iterar sobre cada fotograma del video
+    i = 0
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
@@ -113,21 +116,25 @@ def coorVideoConVideoChatGpt(video_path):
         if len(matriz) < 33:
             print('Inside second if')
             matriz = []
+
             for _ in range(33):
                 matriz.append([0,0,0])
+            drop_frames.append(i)
         tensor.append(matriz)
         
         # Mostrar el fotograma procesado
         
-        cv2.imshow('Pose Estimation', frame)
+        #cv2.imshow('Pose Estimation', frame)
         
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
+        i += 1
+
     # Liberar los recursos
     cap.release()
     cv2.destroyAllWindows()
-    return (np.array(tensor), fps_video, ancho, alto)
+    return (np.array(tensor), fps_video, ancho, alto, drop_frames)
 
 def coordenadasPunto(punto:int, tensor:np.array):
     """Devuelve un np.array (len_video, 3) que representa la secuencia del punto dado
@@ -240,20 +247,51 @@ def crear_video_puntos(lista_matrices, nombre_video_salida, fps, ancho, alto):
     # Guardar los fotogramas como un video usando imageio
     imageio.mimwrite(nombre_video_salida + '.mp4', frames, fps=fps)
 
+def interpola(tensor:np.array, dropped_frames:list[int], coord:bool) -> np.array:
+    """_summary_
+
+    Args:
+        tensor (np.array): El tensor sobre el que hará la interpolacion
+        dropped_frames (list[int]): lista de los indices donde colapsa el frame
+        coord (bool): True si se interpola la X, False si se interpola sobre la Y
+    
+    Returns:
+        (np.array): El tensor interpolado con errores corregidos.
+    """
+    # Creamos el soporte de interpolación.
+    soporte = [i for i in range(len(tensor)) if i not in dropped_frames]
+
+    # Interpolamos en cada punto
+    for i in range(33):
+        
+        # Sacamos la lista de los valores xyz de cada frame.
+        valores_punto = coordenadasPunto(i, tensor)
+        
+        # Creamos el conjunto sobre el que se va a interpolar.
+        conjunto_coord_verdaderas = [valores_punto[i] for i in soporte]
+
 
 if __name__ == "__main__":
     inicio = time()
     
     # Get list of video filenames from the "videos_trickline" directory
     video_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'videos_trickline'))
-    import ipdb;ipdb.set_trace()
+    #import ipdb;ipdb.set_trace()
     video_files = glob.glob(os.path.join(video_folder, "**/*.mp4"), recursive=True)
+    #import pdb;pdb.set_trace()
+    """
     for video_file in video_files:
         video_name = os.path.splitext(os.path.basename(video_file))[0]
-        res, fpss, ancho, alto = coorVideoConVideoChatGpt(video_file)
+        res, fpss, ancho, alto, drop_frames = coorVideoConVideoChatGpt(video_file)
         print(f"Dimension del array: {res.shape}")
-        graficasEnCarpetas(res, video_name)
-        crear_video_puntos(res, video_name, fpss, ancho, alto)
+        np.save(video_file+".npy", res)
+        #graficasEnCarpetas(res, video_name)
+        #crear_video_puntos(res, video_name, fpss, ancho, alto)
+    """
+
+    for tensor in glob.glob(os.path.join(video_folder, "*.npy"), recursive=True):
+        tensor = np.load(tensor)
+
 
     fin = time()
     print(f"Ejecución finalizada en: {fin-inicio} segundos")
