@@ -71,7 +71,7 @@ def coorVideoConVideoChatGpt(nombre_video):
     pose = mp_pose.Pose(static_image_mode=False, min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
     # Cargar el video
-    video_path = "videoscrudo/" + nombre_video + ".mp4"
+    video_path = "trick_classifier/videoscrudo/" + nombre_video + ".mp4"
     cap = cv2.VideoCapture(video_path)
 
     # Obtiene el fps del video. Redondea hacia abajo
@@ -240,19 +240,60 @@ def crear_video_puntos(lista_matrices, nombre_video_salida, fps, ancho, alto):
     # Guardar los fotogramas como un video usando imageio
     imageio.mimwrite(nombre_video_salida + '.mp4', frames, fps=fps)
 
+def mediaAritmeticaCoordYFrame(frame:np.array) -> np.array:
+    """Dada una matriz de un frame, coje las componentes y de los puntos y hace la media aritmética. 
+
+    Args:
+        frame (np.array): Una matriz que representa las coordenadas x y z para los puntos seleccionados.
+
+    Return:
+        (np.array): La media aritmética de los puntos y de todos los puntos.
+    """
+    return np.mean(frame[:,1])
+
+def coordYCadera(frame:np.array) -> float:
+    """Devuelve la coordenada y de la cadera derecha
+
+    Args:
+        frame (np.array): El frame del cual se va a sacar la coordenada y de la cadera derecha.
+
+    Returns:
+        float: El valor de la coordenada y del punto correspondiente a la cadera derecha.
+    """
+    return frame[24,1]
 
 if __name__ == "__main__":
     inicio = time()
     lista_videos = [
-        "gino"
+        "gino",
+        "marcel",
+        "marcel2",
+        "marteen",
+        "marteen2",
+        "yo",
     ]
     
     
     for video in lista_videos:
         res, fpss, ancho, alto = coorVideoConVideoChatGpt(video)
         print(f"Dimension del array: {res.shape}")
-        graficasEnCarpetas(res, video)
-        crear_video_puntos(res, video, fpss, ancho, alto)
+        graficasEnCarpetas(res, "trick_classifier/"+video)
+        crear_video_puntos(res, "trick_classifier/"+video, fpss, ancho, alto)
+        medias_aritmeticas = np.array([mediaAritmeticaCoordYFrame(frame) for frame in res])
+        puntos_cadera = np.array([coordYCadera(frame) for frame in res])
+
+        diferencia = np.abs(medias_aritmeticas - puntos_cadera)
+
+        #print(medias_aritmeticas)
+        #print(len(medias_aritmeticas))
+        
+        plt.plot(diferencia)
+        plt.xlabel('Frame')
+        plt.ylabel('Error')
+        plt.title(video)
+        plt.grid(True)
+        plt.savefig("trick_classifier/"+video+"/"+video)
+
 
 
     fin = time()
