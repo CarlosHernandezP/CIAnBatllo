@@ -105,12 +105,13 @@ def coorVideoConVideoChatGpt(nombre_video):
                 x = landmark.x
                 y = landmark.y
                 z = landmark.z if landmark.HasField('z') else None
-                fila = [x,y,z]
-                if len(fila) == 0: # TODO
-                    fila = [0,0,0]
+                fila = [x, y, z]
+                if not fila:  # Si la fila está vacía, usamos la última entrada registrada
+                    fila = matriz[-1] if matriz else [0, 0, 0]  # Usar la última entrada si existe, sino usar [0,0,0]
                 matriz.append(fila)
 
         if len(matriz) < 33:
+            print('Inside second if')
             matriz = []
             for _ in range(33):
                 matriz.append([0,0,0])
