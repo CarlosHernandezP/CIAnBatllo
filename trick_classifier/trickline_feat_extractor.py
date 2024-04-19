@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 from time import time
 import imageio
 import glob
-
+from tqdm import tqdm
+import argparse
 
 """
 MEJORA DEL RESULTADO DEL PROCESADO:
@@ -55,7 +56,7 @@ partes_cuerpo = {
     32: "Índice del Pie Derecho"
 }
 
-def coorVideoConVideoChatGpt(video_path):
+def coorVideoConVideoChatGpt(video_path, show_video=False):
     """Devuelve un tensor con los fotogramas y en cada fotograma, la matriz con las coordenadas de los puntos
 
     Args:
@@ -118,8 +119,8 @@ def coorVideoConVideoChatGpt(video_path):
         tensor.append(matriz)
         
         # Mostrar el fotograma procesado
-        
-        cv2.imshow('Pose Estimation', frame)
+        if False:
+            cv2.imshow('Pose Estimation', frame)
         
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
@@ -246,14 +247,23 @@ if __name__ == "__main__":
     
     # Get list of video filenames from the "videos_trickline" directory
     video_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'videos_trickline'))
-    import ipdb;ipdb.set_trace()
+   # import ipdb;ipdb.set_trace()
+    video_features_folder = os.path.join(video_folder, 'video_features')
+    if not os.path.exists(video_features_folder):
+        os.makedirs(video_features_folder)
+        
     video_files = glob.glob(os.path.join(video_folder, "**/*.mp4"), recursive=True)
-    for video_file in video_files:
+   # import ipdb;ipdb.set_trace()
+    for video_file in tqdm(video_files):
         video_name = os.path.splitext(os.path.basename(video_file))[0]
         res, fpss, ancho, alto = coorVideoConVideoChatGpt(video_file)
-        print(f"Dimension del array: {res.shape}")
+        
+        # Save the landmark positions for each video separately
+        np.save(os.path.join(video_features_folder, f"{video_name}_landmarkPositions.npy"), res)
+       # import ipdb;ipdb.set_trace()
+
         graficasEnCarpetas(res, video_name)
-        crear_video_puntos(res, video_name, fpss, ancho, alto)
+       # crear_video_puntos(res, video_name, fpss, ancho, alto)
 
     fin = time()
     print(f"Ejecución finalizada en: {fin-inicio} segundos")
