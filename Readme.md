@@ -10,15 +10,18 @@ https://the-eye.eu/public/AI/models/v-diffusion/cc12m_1_cfg.pth
 ## These are the requirements: 
 argparse
 clip
-gc
 k_diffusion
-math
-os
 sounddevice
-sys
 torch
 wavfile
-whisper
+mtranslate
+gtts
+openai-whisper
+ffmpeg-python
+mediapipe
+pygame
+opencv-python
+flask-socketio
 
 
 ## Excecute:
