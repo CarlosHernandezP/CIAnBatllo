@@ -9,6 +9,9 @@ import glob
 from tqdm import tqdm
 import argparse
 
+from scipy.signal import find_peaks
+
+
 """
 MEJORA DEL RESULTADO DEL PROCESADO:
 
@@ -95,7 +98,7 @@ def coorVideoConVideoChatGpt(video_path, show_video=False):
         results = pose.process(frame_rgb)
 
         matriz = []
-        # Dibujar los landmarks si están disponibles
+        # Dibujar los puntos de referencia si están disponibles
         if results.pose_landmarks:
             for landmark in results.pose_landmarks.landmark:
                 # Convertir las coordenadas normalizadas a coordenadas de píxeles
@@ -109,6 +112,7 @@ def coorVideoConVideoChatGpt(video_path, show_video=False):
                 fila = [x, y, z]
                 if not fila:  # Si la fila está vacía, usamos la última entrada registrada
                     fila = matriz[-1] if matriz else [0, 0, 0]  # Usar la última entrada si existe, sino usar [0,0,0]
+                    
                 matriz.append(fila)
 
         if len(matriz) < 33:
@@ -241,6 +245,48 @@ def crear_video_puntos(lista_matrices, nombre_video_salida, fps, ancho, alto):
     # Guardar los fotogramas como un video usando imageio
     imageio.mimwrite(nombre_video_salida + '.mp4', frames, fps=fps)
 
+def segment_n_save_tricks(landmark_positions, filename= 'filename', y_threshold=0.05):
+    """
+    Segments the tricks based on the Y coordinate minima of landmark positions.
+
+    Parameters:
+    - landmark_positions: numpy array of shape (n_frames, n_landmarks, n_coordinates)
+    - y_threshold: float, the threshold above which to consider a Y coordinate value valid
+
+    Returns:
+    - chops_dict: dictionary of numpy arrays, each representing a segmented trick
+    - filename: the name of the file where the dictionary is saved
+    """
+    
+    # Calculate the inverted Y coordinates
+    inverted_y = -landmark_positions[:, :, 1]
+    # Average the Y-coordinates across all landmarks to create a single representative series for peak detection
+    average_y_gino = np.mean(inverted_y[:, :, 1], axis=1)  # Average over all landmarks for each frame
+
+    # Apply peak detection on this averaged series
+    average_peaks_gino = find_peaks(-average_y_gino, prominence=0.2, distance=50)[0]  # Invert for minima detection
+
+    
+    # Flatten the list of peaks and sort them
+    peaks_flat = np.sort(np.unique(np.concatenate(average_peaks_gino)))
+    
+    # Filter out peaks that correspond to sudden drops to zero
+    valid_peaks = peaks_flat[landmark_positions[peaks_flat, 0, 1] > y_threshold]
+    
+    # Create the chops dictionary
+    chops_dict = {}
+    for i in range(len(valid_peaks) - 1):
+        start_frame = valid_peaks[i]
+        end_frame = valid_peaks[i + 1]
+        chop_key = f'chop_{i}'
+        chops_dict[chop_key] = landmark_positions[start_frame:end_frame, :, :]
+    # import ipdb;ipdb.set_trace()
+    
+    import pickle
+    with open(filename + '.pkl', 'wb') as file:
+        pickle.dump(chops_dict, file)
+    
+    return chops_dict, filename
 
 if __name__ == "__main__":
     inicio = time()
@@ -256,14 +302,18 @@ if __name__ == "__main__":
    # import ipdb;ipdb.set_trace()
     for video_file in tqdm(video_files):
         video_name = os.path.splitext(os.path.basename(video_file))[0]
+        feature_name = os.path.join(video_features_folder, f"{video_name}_landmarkPositions.npy")
+
         res, fpss, ancho, alto = coorVideoConVideoChatGpt(video_file)
-        
+
+        #chop_dicts, filename = segment_n_save_tricks(res, filename = feature_name)
         # Save the landmark positions for each video separately
-        np.save(os.path.join(video_features_folder, f"{video_name}_landmarkPositions.npy"), res)
+        #np.save(os.path.join(video_features_folder, f"{video_name}_landmarkPositions.npy"), res)
        # import ipdb;ipdb.set_trace()
 
         graficasEnCarpetas(res, video_name)
-       # crear_video_puntos(res, video_name, fpss, ancho, alto)
+        crear_video_puntos(res, 'puntos_' + video_name, fpss, ancho, alto)
+        print('video saved')
 
     fin = time()
     print(f"Ejecución finalizada en: {fin-inicio} segundos")

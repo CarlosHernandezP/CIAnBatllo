@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from time import time
 import imageio
+import glob
 
 
 """
@@ -54,7 +55,7 @@ partes_cuerpo = {
     32: "Índice del Pie Derecho"
 }
 
-def coorVideoConVideoChatGpt(nombre_video):
+def coorVideoConVideoChatGpt(video_path):
     """Devuelve un tensor con los fotogramas y en cada fotograma, la matriz con las coordenadas de los puntos
 
     Args:
@@ -71,7 +72,6 @@ def coorVideoConVideoChatGpt(nombre_video):
     pose = mp_pose.Pose(static_image_mode=False, min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
     # Cargar el video
-    video_path = "videoscrudo/" + nombre_video + ".mp4"
     cap = cv2.VideoCapture(video_path)
 
     # Obtiene el fps del video. Redondea hacia abajo
@@ -243,17 +243,16 @@ def crear_video_puntos(lista_matrices, nombre_video_salida, fps, ancho, alto):
 
 if __name__ == "__main__":
     inicio = time()
-    lista_videos = [
-        "gino"
-    ]
     
-    
-    for video in lista_videos:
-        res, fpss, ancho, alto = coorVideoConVideoChatGpt(video)
+    # Get list of video filenames from the "videos_trickline" directory
+    video_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'videos_trickline'))
+    video_files = glob.glob(os.path.join(video_folder, "*.mp4"))
+    for video_file in video_files:
+        video_name = os.path.splitext(os.path.basename(video_file))[0]
+        res, fpss, ancho, alto = coorVideoConVideoChatGpt(video_file)
         print(f"Dimension del array: {res.shape}")
-        graficasEnCarpetas(res, video)
-        crear_video_puntos(res, video, fpss, ancho, alto)
-
+        graficasEnCarpetas(res, video_name)
+        crear_video_puntos(res, video_name, fpss, ancho, alto)
 
     fin = time()
     print(f"Ejecución finalizada en: {fin-inicio} segundos")
