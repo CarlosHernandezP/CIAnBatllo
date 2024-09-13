@@ -1,0 +1,13 @@
+version: '3.9'
+services:
+  app:
+    build: .
+    ports:
+      - "5000:5000"  # Exponemos el puerto 5000 para tu aplicación
+    environment:
+      FLASK_APP: api/app.py
+      FLASK_ENV: development
+    volumes:
+      - .:/app
+    command: ["flask", "run", "--host=0.0.0.0"]
+
