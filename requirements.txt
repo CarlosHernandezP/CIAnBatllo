@@ -12,4 +12,7 @@ mediapipe
 pygame
 opencv-python
 flask-socketio
-v-diffusion-models
+requests
+
+# Incluir el repositorio de v-diffusion-pytorch desde GitHub
+git+https://github.com/crowsonkb/v-diffusion-pytorch.git
