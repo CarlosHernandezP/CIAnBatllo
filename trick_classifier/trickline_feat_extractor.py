@@ -95,29 +95,15 @@ def coorVideoConVideoChatGpt(video_path, show_video=False):
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         results = pose.process(frame_rgb)
 
-        matriz = []
+        # Prepare a matrix to store landmarks for this frame
+        matriz = np.full((33, 3), np.nan) # Initialize with NaNs
         # Dibujar los landmarks si están disponibles
         if results.pose_landmarks:
-            for landmark in results.pose_landmarks.landmark:
-                # Convertir las coordenadas normalizadas a coordenadas de píxeles
-                height, width, _ = frame.shape
-                cx, cy = int(landmark.x * width), int(landmark.y * height)
-                cv2.circle(frame, (cx, cy), 1, (0, 255, 0), -1)
-                # Sacamos las cositas
-                x = landmark.x
-                y = landmark.y
-                z = landmark.z if landmark.HasField('z') else None
-                fila = [x, y, z]
-                if not fila:  # Si la fila está vacía, usamos la última entrada registrada
-                    fila = matriz[-1] if matriz else [0, 0, 0]  # Usar la última entrada si existe, sino usar [0,0,0]
-                matriz.append(fila)
+            for idx, landmark in enumerate(results.pose_landmarks.landmark):
+                # Append x, y, z coordinates to the matriz
+                matriz[idx] = [landmark.x, landmark.y, landmark.z if landmark.HasField('z') else np.nan]
 
-        if len(matriz) < 33:
-            print('Inside second if')
-            matriz = []
-            for _ in range(33):
-                matriz.append([0,0,0])
-        tensor.append(matriz)
+        tensor.append(matriz)    
         
         # Mostrar el fotograma procesado
         if False:
@@ -129,7 +115,25 @@ def coorVideoConVideoChatGpt(video_path, show_video=False):
     # Liberar los recursos
     cap.release()
     cv2.destroyAllWindows()
-    return (np.array(tensor), fps_video, ancho, alto)
+
+    # Convert tensor to numpy array
+    tensor = np.array(tensor)
+    interpolate_landmarks(tensor)  # Call to interpolation function
+
+    return (tensor, fps_video, ancho, alto)
+
+
+def interpolate_landmarks(tensor):
+    # Example of linear interpolation over axis 0 (time)
+    # Interpolating only x and y for simplicity
+    for i in range(tensor.shape[1]):  # Iterate over each landmark
+        for j in range(2):  # x, y coordinates
+            valid = ~np.isnan(tensor[:, i, j])
+            indices = np.arange(len(tensor))
+            if np.any(valid):
+                interp_values = np.interp(indices, indices[valid], tensor[valid, i, j])
+                tensor[:, i, j] = interp_values
+
 
 def coordenadasPunto(punto:int, tensor:np.array):
     """Devuelve un np.array (len_video, 3) que representa la secuencia del punto dado
