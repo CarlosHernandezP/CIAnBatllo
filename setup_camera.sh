@@ -61,7 +61,6 @@ get_local_ip() {
   echo "La IP local es: $LOCAL_IP"
 }
 
-
 # Crear una variable de entorno con la IP local
 set_env_variable() {
   export STREAM_URL="http://$LOCAL_IP:5001/video_feed"
@@ -82,10 +81,23 @@ replace_ip_in_python() {
   echo "stream_url se ha actualizado en video_controller.py."
 }
 
+# Verificar si la imagen de Docker existe, si no, crearla
+check_docker_image() {
+  IMAGE_NAME="cianbatllo-app"  # Cambia este nombre por el que uses
+
+  if [[ "$(docker images -q $IMAGE_NAME 2> /dev/null)" == "" ]]; then
+    echo "La imagen de Docker no existe. Creándola ahora..."
+    docker-compose build
+  else
+    echo "La imagen de Docker ya existe."
+  fi
+}
+
 run_docker() {
+  echo "Verificando la imagen de Docker..."
+  check_docker_image
 
   echo "Ejecutando el servidor Docker..."
-
   docker-compose up -d
 
   # Esperar unos segundos para que el servidor Flask arranque
