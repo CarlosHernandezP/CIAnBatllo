@@ -7,7 +7,13 @@ const canvasWidth = card.clientWidth - 20; // Ancho de la card menos 20 píxeles
 const canvasHeight = 400; // Establece la altura según tus necesidades
 
 // Conexion con python y el controlador de game
-const socket = io.connect('http://' + document.domain + ':' + location.port);
+const socket = io(
+    window.location.origin,
+    { transports: ['websocket', 'polling'] }
+);
+
+const HAND_EVENT_COOLDOWN = 300; // ms
+const lastHandEvent = { left: 0, right: 0 };
 
 // Establecer el tamaño del canvas
 canvas.width = canvasWidth;
@@ -67,6 +73,27 @@ function jumpSpecial(rect) {
     jump(rect);
 }
 
+function canTrigger(hand) {
+    const now = performance.now();
+    if (now - lastHandEvent[hand] < HAND_EVENT_COOLDOWN) {
+        return false;
+    }
+    lastHandEvent[hand] = now;
+    return true;
+}
+
+function handleHandEvent(hand) {
+    if (!hand || !canTrigger(hand)) {
+        return;
+    }
+
+    if (hand === 'left') {
+        jumpSpecial(rectRed);
+    } else if (hand === 'right') {
+        jump(rectGreen);
+    }
+}
+
 window.addEventListener('keydown', (event) => {
     if (event.code === 'Space') {
         // Realizar el salto en el rectángulo correspondiente según la posición de la mano
@@ -104,14 +131,6 @@ socket.on('disconnect', function () {
 });
 
 socket.on('hand_raised_event', function (data) {
-    // Reemplaza la lógica de salto según la mano levantada
-    if (data.left_hand_raised) {
-        // Llama a la función jumpSpecial para realizar la acción especial de salto
-        jumpSpecial(rectRed);
-    } else if (data.right_hand_raised) {
-        // Si no se levanta la mano derecha, realiza el salto con el rectángulo verde
-        jump(rectGreen);
-    }else{
-        jump();
-    }
+    const hand = data.hand || (data.left_hand_raised ? 'left' : data.right_hand_raised ? 'right' : null);
+    handleHandEvent(hand);
 });
