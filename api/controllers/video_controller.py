@@ -22,7 +22,8 @@ def generate_frames():
     Conecta al stream HTTP que expone el video de la cámara y procesa los frames con MediaPipe.
     """
     # URL del stream HTTP (reemplazar <host-ip> con la IP del host donde se está ejecutando el servidor Flask)
-    stream_url = 'http://192.168.1.17:5001/video_feed'
+    # stream_url = 'http://192.168.1.17:5001/video_feed'
+    stream_url = 'http://127.0.0.1:5001/video_feed'
     stream = requests.get(stream_url, stream=True)
 
     # Inicialización de MediaPipe con parámetros optimizados
